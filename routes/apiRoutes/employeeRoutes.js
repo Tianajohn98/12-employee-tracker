@@ -8,7 +8,7 @@ router.get("/", (req, res) => {
        roles.title,
        departments.name AS department,
        roles.salary,
-       CONCAT(e2.last_name,',', e2.first_name) AS managerr
+       CONCAT(e2.last_name,',', e2.first_name) AS manager
        FROM employees e1 
        LEFT JOIN employees e2
 
@@ -39,7 +39,7 @@ router.get("/managers", (req, res) => {
             WHERE e1.manager_id != 'NULL'
             ORDER BY e2.id ASC`;
 
-  db.quert(sql, (err, rows) => {
+  db.query(sql, (err, rows) => {
     if (err) {
       res.status(400).json({ error: err.message });
       return;
@@ -63,7 +63,7 @@ router.post("/", ({ body }, res) => {
     body.manager_id,
   ];
 
-  db.quey(sql, params, (err, result) => {
+  db.query(sql, params, (err, result) => {
     if (err) {
       res.status(400).json({ error: err.massage });
       return;

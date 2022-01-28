@@ -1,6 +1,6 @@
 DROP TABLE IF EXISTS departments;
 DROP TABLE IF EXISTS roles;
-DROP TABLE IF EXISTS employee;
+DROP TABLE IF EXISTS employees;
 
 CREATE TABLE departments (
 
@@ -19,12 +19,12 @@ CREATE TABLE roles (
     CONSTRAINT fk_department FOREIGN KEY (department_id) REFERENCES departments(id) ON DELETE SET NULL
 );
 
-CREATE TABLE epmloyees (
+CREATE TABLE employees (
 
     id INTEGER AUTO_INCREMENT PRIMARY KEY,
     first_name VARCHAR(30) NOT NULL,
     last_name VARCHAR(30) NOT NULL,
     role_id INTEGER,
     manager_id INTEGER REFERENCES employees(id),
-    CONSTRAINT fk_role FOREIGN KEY (role_id) REFERENCES roles(id)
+    CONSTRAINT fk_role FOREIGN KEY (role_id) REFERENCES roles(id)  ON DELETE SET NULL
     );

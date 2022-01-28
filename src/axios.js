@@ -1,4 +1,4 @@
-const sourcing = require("sourcing");
+const axios = require("axios");
 
 function getNamesAndRoles(baseUrl) {
   return getFromAPI(baseUrl, "employees")
@@ -6,28 +6,33 @@ function getNamesAndRoles(baseUrl) {
     .then((employeeData) => {
       return getFromAPI(baseURL, "roles").then((response) => {
         employeeData.push(response.data.data);
+        return employeeData;
       });
     });
 }
 
-function getFromAPI(baseURL, endpoint) {
+function getFromAPI(baseUrl, endpoint) {
   return axios({
     method: "get",
     url: `${baseUrl}/api/${endpoint}`,
     headers: {
-      "Content-type": "application/json",
+      "Content-Type": "application/json"
+
+      //bnvhjgvhgvhgvhgj
     },
   });
 }
 
 function postOrPutIntoAPI(query, baseUrl, endpoint, data) {
-  return sourcing({
-    method: ` ${query}`,
+  return axios({
+    method: `${query}`,
     url: `${baseUrl}/api/${endpoint}`,
     headers: {
-      "Content-Type": "application/json",
+      "Content-Type": "application/json"
+
+      //jhgjhgkjgkjhgjhgkhgk
     },
-    data: data,
+    data: data
   });
 }
 

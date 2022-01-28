@@ -1,69 +1,67 @@
 const inquirer = require("inquirer");
-
 const cTable = require("console.table");
 
 const {
   mainMenuQuestion,
   addDepartmentQuestion,
   addRoleQuestions,
-  addEmployeeQuestions,
+  addEmployeesQuestions,
   updateEmployeeQuestions,
-} = require("./lib/questions");
-
+} = require("./lib/prompt");
 const {
   getFromAPI,
   getNamesAndRoles,
   postOrPutIntoAPI,
-} = require("./src/sourcing");
-const { response } = require("express");
+} = require("./src/axios");
 
-const printSeperator = () => console.log("/printed");
+const printSeperator = () =>
+  console.log("\n======================================================\n\n");
 
 function printAndBackToMainMenu(PORT, response) {
-  printSEperator();
+  printSeperator();
   console.table(response.data.data);
-  mainMenuQuestion(PORT);
+  mainMenu(PORT);
 }
 
 function mainMenu(PORT) {
-  const baseURL = "http://localhost:${PORT}";
+  const baseUrl = `http://localhost:${PORT}`;
   printSeperator();
-  console.log(" Main Menu");
+  console.log("                        Main Menu\n\n");
   inquirer.prompt(mainMenuQuestion).then((mainChoice) => {
     if (mainChoice.mainMenu === "view all departments") {
       printSeperator();
-      console.log(" View All Departments");
-      getFromAPI(baseURL, "departments").then((response) =>
+      console.log("                   View All Departments\n\n");
+      getFromAPI(baseUrl, "departments").then((response) =>
         printAndBackToMainMenu(PORT, response)
       );
     } else if (mainChoice.mainMenu === "view all roles") {
       printSeperator();
-      console.log(" View All Roles");
-      getFromAPI(baseURL, "roles").then((response) =>
+      console.log("                       View All Roles\n\n");
+      getFromAPI(baseUrl, "roles").then((response) =>
         printAndBackToMainMenu(PORT, response)
       );
     } else if (mainChoice.mainMenu === "view all employees") {
       printSeperator();
-      console.log(" View All Employees");
-      getFromAPI(baseURL, "employees").then((response) =>
+      console.log("                     View All Employees\n\n");
+      getFromAPI(baseUrl, "employees").then((response) =>
         printAndBackToMainMenu(PORT, response)
       );
     } else if (mainChoice.mainMenu === "add a department") {
       printSeperator();
-      console.log(" Add a department");
+      console.log("                      Add a Department\n\n");
       inquirer
         .prompt(addDepartmentQuestion)
         .then((departmentInput) =>
-          postOrPutIntoAPI("POST", baseURL, "departments", {
+          postOrPutIntoAPI("post", baseUrl, "departments", {
             name: departmentInput.departmentName,
           })
         )
         .then((response) => printAndBackToMainMenu(PORT, response));
     } else if (mainChoice.mainMenu === "add a role") {
       printSeperator();
-      console.log(" Add a Role");
+      console.log("                         Add a Role\n\n");
       const departments = [];
-      getFromAPI(baseURL, "departments")
+      getFromAPI(baseUrl, "departments")
         .then((response) => {
           departments.push(response.data.data);
           printSeperator();
@@ -71,9 +69,9 @@ function mainMenu(PORT) {
         })
         .then((roleInput) => {
           const departmentId = departments[0].filter(
-            dept.name === roleInput.roleDepartment
+            (dept) => dept.name === roleInput.roleDepartment
           )[0].id;
-          return postOrPutIntoAPI("post", baseURL, "roles", {
+          return postOrPutIntoAPI("post", baseUrl, "roles", {
             title: roleInput.roleTitle,
             salary: roleInput.roleSalary,
             department_id: departmentId,
@@ -82,15 +80,15 @@ function mainMenu(PORT) {
         .then((response) => printAndBackToMainMenu(PORT, response));
     } else if (mainChoice.mainMenu === "add an employee") {
       printSeperator();
-      console.log(" Add an Employee");
+      console.log("                      Add an Employee\n\n");
       getNamesAndRoles(baseUrl).then((totalData) => {
         const roles = totalData[totalData.length - 1];
+
         totalData.pop();
 
         printSeperator();
-
         inquirer
-          .prompt(addEmployeeQuestions(roles, totalData))
+          .prompt(addEmployeesQuestions(roles, totalData))
 
           .then((userInput) => {
             const managerId =
@@ -100,9 +98,11 @@ function mainMenu(PORT) {
                   userInput.manager.lastIndexOf("id:") + 4
                 )
               );
-            const roleId = roles.filter(role.title === userInput.roleTitle)[0]
-              .id;
-            postOrPutIntoAPI("post", baseURL, "employees", {
+
+            const roleId = roles.filter(
+              (role) => role.title === userInput.roleTitle
+            )[0].id;
+            postOrPutIntoAPI("post", baseUrl, "employees", {
               first_name: userInput.firstName,
               last_name: userInput.lastName,
               role_id: roleId,
@@ -112,7 +112,7 @@ function mainMenu(PORT) {
       });
     } else if (mainChoice.mainMenu === "update an employee role") {
       printSeperator();
-      console.log(" Update An Employee Role");
+      console.log("                 Update An Employee Role\n\n");
       return getNamesAndRoles(baseUrl).then((totalData) => {
         const roles = totalData[totalData.length - 1];
 
@@ -136,7 +136,7 @@ function mainMenu(PORT) {
               (role) => role.title === userInput.employeeRole
             )[0].id;
 
-            postOrPutIntoAPI("put", baseUrl, "employees/${empId}", {
+            postOrPutIntoAPI("put", baseUrl, `employees/${empId}`, {
               role_id: roleId,
             }).then((response) => printAndBackToMainMenu(PORT, response));
           });
