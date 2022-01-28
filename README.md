@@ -19,6 +19,8 @@ Start the application with "npm start".
 Licensed under the MIT license.
 
 
+## Screenshots:
+
 <img width="1440" alt="Terminal Screen Shot 2022-01-27 at 10 43 54 PM" src="https://user-images.githubusercontent.com/89621944/151483877-4528e376-b3b4-48d6-8729-956ec2a1760f.png">
 
 
